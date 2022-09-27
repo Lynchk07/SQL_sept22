@@ -6,16 +6,12 @@ VALUES
 ('Legal' ),
 ('Sales' );
 
-SELECT * FROM department;
 
 INSERT INTO roles (title,salary,department_id)
 VALUES ("Software Engineer","70000", 1),
 ("Accountant","90000",2),
 ("Lawyer","70000",3),
 ("Account Manager","70000",4);
-
-SELECT * FROM roles;
-
 
 
 INSERT INTO employee (first_name,last_name,role_id,manager_id)
@@ -25,4 +21,3 @@ VALUES ("Dwight","Schrutt",1,null),
 ("Jim","Halpert",4,2);
 
 
-SELECT * FROM employee;
