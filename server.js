@@ -24,13 +24,14 @@ const dbConnection = mysql.createConnection({
     )
     
 );
+//is this required?
 dbConnection.connect((err)=> {
     if(err)throw err;
     console.log(`Connected as id error`);
     startTrackerApp();
 });
 
-
+    //edit error in function here.
     const startTrackerApp =(req,res) => {
     //prompt to view all departments 
     inquirer
@@ -73,10 +74,11 @@ dbConnection.connect((err)=> {
             }
         })
     };
+
     viewAllDepartments = () => {
         connection.query(`SELECT * FROM department ORDER BY department_id`, (err, res) => {
             if (err) throw err;
-            console.table('\n',response,'\n');
+            console.table('\n',res,'\n');
             startTrackerApp();
         })
     };
