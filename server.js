@@ -76,12 +76,56 @@ dbConnection.connect((err)=> {
     };
 
     viewAllDepartments = () => {
-        connection.query(`SELECT * FROM department ORDER BY department_id`, (err, res) => {
+        dbConnection.query(`SELECT * FROM department`, (err,res) => {
+            if (err) throw err;
+            console.table('\n',res,'\n');
+        
+        })
+    };
+
+    addDepartment = () => {
+        dbConnection.query(`SELECT * FROM department`, (err, res) => {
             if (err) throw err;
             console.table('\n',res,'\n');
             startTrackerApp();
         })
     };
+
+    viewAllEmployees = () => {
+        dbConnection.query(`SELECT * FROM employees`, (err, res) => {
+            if (err) throw err;
+            console.table('\n',res,'\n');
+            startTrackerApp();
+        })
+    };
+
+    addEmployee = () => {
+        dbConnection.query(`SELECT * FROM employee`, (err, res) => {
+            if (err) throw err;
+            console.table('\n',res,'\n');
+            startTrackerApp();
+        })
+    };
+
+    updateEmployeeRole = () => {
+        dbConnection.query(`SELECT * FROM roles `, (err, res) => {
+            if (err) throw err;
+            console.table('\n',res,'\n');
+            startTrackerApp();
+        })
+    };
+
+
+    viewAllRoles = () => {
+        dbConnection.query(`SELECT * FROM roles `, (err, res) => {
+            if (err) throw err;
+            console.table('\n',res,'\n');
+            startTrackerApp();
+        })
+    };
+
+
+   
 
 // //Initialize 
 // function init() {
