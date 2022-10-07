@@ -8,6 +8,10 @@ const cTABLE = require('console.table');
  //dotenv
 require('dotenv').config();
 
+//Arrays created for department and roles:
+const companyDepartments = [];
+const companyRoles = [];
+
 
 
 const dbConnection = mysql.createConnection({
@@ -32,7 +36,7 @@ console.table(
 dbConnection.connect((err)=> {
     if(err)throw err;
     // console.log(`Connected as id error`);
-    startTrackerApp();
+    // startTrackerApp();
 });
     //edit error in function here.
     const startTrackerApp = (req,res)=>{
@@ -79,7 +83,8 @@ dbConnection.connect((err)=> {
         })
     };
 
-    //response answer - tables 
+//response answer - tables 
+    //function called when user select "view all departments"
     function viewAllDepartments(){
         dbConnection.query(`SELECT * FROM department`, (err,res) => {
             if (err) throw err;
@@ -88,7 +93,7 @@ dbConnection.connect((err)=> {
         
         })
     };
-
+    //function called when user select "view all employees"
      function viewAllEmployees(){
         dbConnection.query(`SELECT * FROM employee`, (err, res) => {
             if (err) throw err;
@@ -96,7 +101,7 @@ dbConnection.connect((err)=> {
             startTrackerApp();
         })
     };
-
+    //function called when user select "view all roles"
     function viewAllRoles(){
         dbConnection.query(`SELECT * FROM roles `, (err, res) => {
             if (err) throw err;
@@ -105,45 +110,109 @@ dbConnection.connect((err)=> {
         })
     };
 
-
+//Function called when "Add Department" is choosen.
     function addDepartment(){
-        const addDepartmentQuestion=[
+       inquirer.prompt([
             {
                 type:'input',
-                name: 'newDepartment',
-                message:'What Department would you like to add?'
+                message:'What Department would you like to add?',
+                name: 'department'
             },
-        ]; 
-
-        inquirer.prompt(addDepartmentQuestion)
-            .then((response)=> {
-                dbConnection.query(`INSERT INTO department (department_name) VALUES (?)`,[response.newDepartment], (err,res)=>{
+        ])
+        .then(({department})=> {
+                dbConnection.query(`INSERT INTO department SET ?`,
+                {
+                    name:'department'
+                }, 
+                function (err) {
                     if (err) throw err;
-                     else {
-                        console.log(`${response.newDepartment}is added to departments`)
-                        startTrackerApp();
+                    console.log(`${department} is added to departments.`);
+                    companyDepartments.push(department);
 
-                        }
-                });
+                    startTrackerApp();
+
+                    }
+                );
             },
       )};
 
+//function to add an Employee
+    function addEmployee() {
+        inquirer.prompt([
+            {
+            type: "input",
+            message: "Employee's first name?",
+            name:'firstName'
+            },
+            {
+            type: "input",
+            message: "Employee's last name?",
+            name:'lastName'
+            },
+            {
+            type: "list",
+            message: "What is the employee's role?",
+            choices:'roles',
+            name:'roles'
+            },
+            {
+            type: "list",
+            message: "Who is the employee's manager?",
+            choices:["null"],
+            name:'manager'
+            },
+    ])
 
-    function addEmployee(){
-        dbConnection.query(`INSERT INTO employee ()`, (err, res) => {
+        .then(answer=> {
+            emplFirstName = answer.firstName;
+            emplLastName = answer.lastName;
+
+        dbConnection.query(`INSERT INTO employee SET ?`, {
+            emplFirstName: employee.first_name,
+            emplLastName: employee.last_name,
+            role_id: res [0].id
+
+        },
+        
+        function (err){
             if (err) throw err;
             console.table('\n',res,'\n');
-            startTrackerApp();
         })
+    })
+            startTrackerApp();
+        
     };
-
+// function to update an employee role 
     function updateEmployeeRole(){
-        dbConnection.query(`SELECT employee FROM roles `, (err, res) => {
+        let employeeDataList
+
+        dbConnection.query(`SELECT first_name, last_name FROM employee `, 
+        function (err, res){
             if (err) throw err;
             console.table('\n',res,'\n');
-            startTrackerApp();
-        })
+            employeeDataList = res.map(employee => {
+                return `${employee.first_name}${employee.last_name}`
+            })
+            console.table(employeeDataList);
+            inquirer.prompt([
+                {
+                type:"list",
+                messages: "Who's role would you like to update?",
+                choices: employeeDataList,
+                name: "employee"
+            },
+            {
+                type:"list",
+                messages: "What role do you want to assign?",
+                choices: roles,
+                name: "roles"
+            },
+        ]).then(response => {});
+            
+        });
     };
+
+    startTrackerApp();
 
 
     
