@@ -122,12 +122,12 @@ dbConnection.connect((err)=> {
         .then(({department})=> {
                 dbConnection.query(`INSERT INTO department SET ?`,
                 {
-                    name:'department'
+                    name:department
                 }, 
                 function (err) {
                     if (err) throw err;
                     console.log(`${department} is added to departments.`);
-                    companyDepartments.push(department);
+                    // companyDepartments.push(department);
 
                     startTrackerApp();
 
@@ -136,8 +136,49 @@ dbConnection.connect((err)=> {
             },
       )};
 
+    async function addRole(){
+        const [departments] = await dbConnection.promise().query("SELECT * FROM department")
+        const departmentArray = departments.map(department => ({name:department.name,value:department.id}))
+        
+        inquirer.prompt([
+            {
+                type:'input',
+                name:'title',
+                message:'What is the new roles title?'
+            },
+            {
+                type:'input',
+                name:'salary',
+                message:'What is the salary?'   
+            },
+            {
+                type:'list',
+                name:'departmentid',
+                message:'Please select department',
+                choices:departmentArray   
+            },
+        ]).then(answers => {
+            var roleObject = {
+                title:answers.title,
+                salary:answers.salary,
+                department_id:answers.departmentid
+            }
+            dbConnection.query("INSERT INTO roles SET ?", roleObject, function (err) {
+                if (err) throw err;
+                startTrackerApp();
+            }
+                )
+        })
+    }
 //function to add an Employee
-    function addEmployee() {
+ async function addEmployee() {
+    const [roles] = await dbConnection.promise().query("SELECT * FROM roles")
+        const rolesArray = roles.map(role => ({name:role.title,value:role.id}))
+
+        const [managers] = await dbConnection.promise().query("SELECT * FROM employee")
+        const managersArray = managers.map(manager=> ({name:manager.first_name+' '+manager.last_name,value:manager.id}))
+        console.log(managersArray)
+
         inquirer.prompt([
             {
             type: "input",
@@ -152,34 +193,31 @@ dbConnection.connect((err)=> {
             {
             type: "list",
             message: "What is the employee's role?",
-            choices:'roles',
+            choices:rolesArray,
             name:'roles'
             },
             {
             type: "list",
             message: "Who is the employee's manager?",
-            choices:["null"],
+            choices:managersArray,
             name:'manager'
             },
     ])
 
         .then(answer=> {
-            emplFirstName = answer.firstName;
-            emplLastName = answer.lastName;
-
-        dbConnection.query(`INSERT INTO employee SET ?`, {
-            emplFirstName: employee.first_name,
-            emplLastName: employee.last_name,
-            role_id: res [0].id
-
-        },
+            // emplFirstName = answer.firstName;
+            // emplLastName = answer.lastName;
+            console.log(answer)
+            var employeeObject = {first_name:answer.firstName,last_name:answer.lastName,role_id:answer.roles,manager_id:answer.manager}
+        dbConnection.query(`INSERT INTO employee SET ?`,employeeObject,
         
         function (err){
             if (err) throw err;
-            console.table('\n',res,'\n');
+            viewAllEmployees();
+            // console.table('\n',res,'\n');
         })
     })
-            startTrackerApp();
+            // startTrackerApp();
         
     };
 // function to update an employee role 
@@ -207,7 +245,9 @@ dbConnection.connect((err)=> {
                 choices: roles,
                 name: "roles"
             },
-        ]).then(response => {});
+        ]).then(response => {
+            console.log
+        });
             
         });
     };
