@@ -6,7 +6,7 @@ const inquirer = require('inquirer');
 //console.table 
 const cTABLE = require('console.table');
  //dotenv
-require('dotenv').config();
+require('dotenv').config()
 
 //Arrays created for department and roles:
 const companyDepartments = [];
@@ -205,8 +205,6 @@ dbConnection.connect((err)=> {
     ])
 
         .then(answer=> {
-            // emplFirstName = answer.firstName;
-            // emplLastName = answer.lastName;
             console.log(answer)
             var employeeObject = {first_name:answer.firstName,last_name:answer.lastName,role_id:answer.roles,manager_id:answer.manager}
         dbConnection.query(`INSERT INTO employee SET ?`,employeeObject,
@@ -214,16 +212,21 @@ dbConnection.connect((err)=> {
         function (err){
             if (err) throw err;
             viewAllEmployees();
-            // console.table('\n',res,'\n');
+            
         })
     })
-            // startTrackerApp();
-        
+          
     };
 // function to update an employee role 
-    function updateEmployeeRole(){
-        let employeeDataList
+    async function updateEmployeeRole(){
+        const [roles] = await dbConnection.promise().query("SELECT * FROM roles")
+        const rolesArray = roles.map(role => ({name:role.title,value:role.id}))
 
+
+       
+        //         const [managers] = await dbConnection.promise().query("SELECT * FROM employee")
+        //         const managersArray = managers.map(manager=> ({name:manager.first_name+' '+manager.last_name,value:manager.id}))
+        //         console.log(managersArray)
         dbConnection.query(`SELECT first_name, last_name FROM employee `, 
         function (err, res){
             if (err) throw err;
@@ -242,11 +245,23 @@ dbConnection.connect((err)=> {
             {
                 type:"list",
                 messages: "What role do you want to assign?",
-                choices: roles,
+                choices: role,
                 name: "roles"
             },
         ]).then(response => {
-            console.log
+            console.log(answer)
+            
+            var updateRole = {first_name:answer.firstName,last_name:answer.lastName,role_id:answer.roles,manager_id:answer.manager}
+
+            
+        //     dbConnection.query(`INSERT INTO employee SET ?`,employeeObject,
+            
+        //     function (err){
+        //         if (err) throw err;
+        //         viewAllEmployees();
+                
+        //     })
+        // })
         });
             
         });
